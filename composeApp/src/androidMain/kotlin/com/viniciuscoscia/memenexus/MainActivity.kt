@@ -13,7 +13,14 @@ import com.viniciuscoscia.memenexus.core.presentation.DarkContent
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(DarkContent.toArgb()))
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(
+                scrim = DarkContent.toArgb(),
+            ),
+            navigationBarStyle = SystemBarStyle.dark(
+                scrim = DarkContent.toArgb(),
+            )
+        )
         setContent {
             App()
         }

@@ -22,7 +22,7 @@ navigationCompose = "2.8.0-alpha10"
 kotlinSerialization = "1.7.3"
 koin = "4.0.0"
 coil3 = "3.0.0-rc02"
-ksp = "2.0.21-1.0.28"
+ksp = "2.1.0-1.0.29"
 sqlite = "2.5.0-alpha11"
 room = "2.7.0-alpha11"
 
