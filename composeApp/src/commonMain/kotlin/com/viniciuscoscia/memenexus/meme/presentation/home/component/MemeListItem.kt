@@ -39,7 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.viniciuscoscia.memenexus.core.presentation.PulseAnimation
-import com.viniciuscoscia.memenexus.meme.domain.Meme
+import com.viniciuscoscia.memenexus.meme.domain.entity.Meme
 import memenexus.composeapp.generated.resources.Res
 import memenexus.composeapp.generated.resources.book_error_2
 import org.jetbrains.compose.resources.painterResource

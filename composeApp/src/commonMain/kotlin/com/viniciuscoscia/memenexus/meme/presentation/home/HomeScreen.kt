@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.viniciuscoscia.memenexus.meme.presentation.home
 
 import androidx.compose.foundation.background
@@ -7,38 +9,70 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.viniciuscoscia.memenexus.core.presentation.DarkContent
 import com.viniciuscoscia.memenexus.core.presentation.DarkSurface
 import com.viniciuscoscia.memenexus.core.presentation.MemeNexusTheme
 import com.viniciuscoscia.memenexus.core.presentation.components.DropdownMenuWithArrow
 import com.viniciuscoscia.memenexus.core.presentation.components.RemoteSvgLoader
+import com.viniciuscoscia.memenexus.meme.domain.entity.MemeTemplate
+import com.viniciuscoscia.memenexus.meme.presentation.home.component.MemeList
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
 @Composable
-fun HomeScreenRoot() {
+fun HomeScreenRoot(
+    viewModel: HomeViewModel = koinViewModel(),
+    onMemeTemplateClick: (MemeTemplate) -> Unit,
+) {
     MemeNexusTheme {
-        HomeScreen()
+        val state by viewModel.state.collectAsStateWithLifecycle()
+
+        HomeScreen(
+            homeState = state,
+            onAction = { action ->
+                when (action) {
+//                    is BookListAction.OnBookClick -> onBookClick(action.book)
+                    else -> Unit
+                }
+                viewModel.onAction(action)
+            }
+        )
+
+        HomeScreen(state, viewModel::onAction)
     }
 }
 
 @Preview
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    homeState: HomeState,
+    onAction: (HomeAction) -> Unit,
+) {
     Column(
         modifier = Modifier
             .statusBarsPadding()
@@ -47,25 +81,11 @@ fun HomeScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HomeTopBar()
-        HomeBody()
+        HomeBody(
+            homeState = homeState,
+            onAction = onAction
+        )
     }
-}
-
-@Composable
-fun HomeFab(modifier: Modifier) {
-    FloatingActionButton(
-        modifier = modifier,
-        onClick = {
-            println("Create Meme")
-        },
-        content = {
-            Text(
-                fontWeight = FontWeight(350),
-                fontSize = 30.sp,
-                text = "+",
-            )
-        }
-    )
 }
 
 @Preview
@@ -93,13 +113,79 @@ private fun HomeTopBar() {
 }
 
 @Composable
-private fun HomeBody() {
+private fun HomeBody(
+    homeState: HomeState,
+    onAction: (HomeAction) -> Unit,
+) {
     Surface(
         modifier = Modifier
             .fillMaxSize(),
         color = MaterialTheme.colorScheme.surfaceContainer
     ) {
-        NoMemesCreatedYet()
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (homeState.memes.isNotEmpty()) {
+                MemeList(
+                    memes = homeState.memes,
+                    onMemeClick = {
+                        println("Meme clicked: $it")
+                    }
+                )
+            } else {
+                NoMemesCreatedYet()
+            }
+
+            var showBottomSheet by remember { mutableStateOf(false) }
+
+            HomeFab(
+                modifier = Modifier
+                    .padding(
+                        all = 24.dp,
+                    )
+                    .align(Alignment.BottomEnd),
+            ) {
+                showBottomSheet = showBottomSheet.not()
+            }
+
+            if (showBottomSheet) {
+                HalfScreenBottomSheet()
+            }
+        }
+    }
+}
+
+@Composable
+fun HalfScreenBottomSheet() {
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false
+    )
+
+    val scope = rememberCoroutineScope()
+
+    ModalBottomSheet(
+        sheetState = sheetState,
+        modifier = Modifier.fillMaxWidth(),
+        onDismissRequest = { /* Handle dismiss */ },
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(MaterialTheme.colorScheme.primary)
+            )
+        }
+    ) {
+        // Bottom sheet content
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp), // Set height of half-expanded state
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "This is a bottom sheet!")
+        }
     }
 }
 
@@ -129,15 +215,22 @@ private fun NoMemesCreatedYet() {
                 modifier = Modifier.padding(16.dp)
             )
         }
-
-        HomeFab(
-            modifier = Modifier
-                .padding(
-                    all = 24.dp,
-                )
-                .align(Alignment.BottomEnd)
-        )
     }
+}
+
+@Composable
+private fun HomeFab(modifier: Modifier, onClick: () -> Unit) {
+    FloatingActionButton(
+        modifier = modifier,
+        onClick = onClick,
+        content = {
+            Text(
+                fontWeight = FontWeight(350),
+                fontSize = 30.sp,
+                text = "+",
+            )
+        }
+    )
 }
 
 @Composable
