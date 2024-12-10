@@ -1,7 +1,5 @@
-package com.plcoding.bookpedia.di
+package com.viniciuscoscia.memenexus.di
 
-import com.viniciuscoscia.memenexus.di.platformModule
-import com.viniciuscoscia.memenexus.di.sharedModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 

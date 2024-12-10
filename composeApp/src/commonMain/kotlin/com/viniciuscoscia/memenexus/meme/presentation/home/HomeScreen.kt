@@ -17,14 +17,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,6 +76,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .statusBarsPadding()
+            .navigationBarsPadding()
             .background(DarkSurface)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -136,7 +137,10 @@ private fun HomeBody(
                 NoMemesCreatedYet()
             }
 
-            var showBottomSheet by remember { mutableStateOf(false) }
+            val sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = false
+            )
+            var isSheetOpen by rememberSaveable { mutableStateOf(false) }
 
             HomeFab(
                 modifier = Modifier
@@ -145,42 +149,35 @@ private fun HomeBody(
                     )
                     .align(Alignment.BottomEnd),
             ) {
-                showBottomSheet = showBottomSheet.not()
+                isSheetOpen = true
             }
 
-            if (showBottomSheet) {
-                HalfScreenBottomSheet()
+            if (isSheetOpen) {
+                HomeTemplateBottomSheet(
+                    bottomSheetState = sheetState,
+                    onDismissRequest = {
+                        isSheetOpen = false
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun HalfScreenBottomSheet() {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false
-    )
-
-    val scope = rememberCoroutineScope()
-
+fun HomeTemplateBottomSheet(
+    bottomSheetState: SheetState,
+    onDismissRequest: () -> Unit
+) {
     ModalBottomSheet(
-        sheetState = sheetState,
-        modifier = Modifier.fillMaxWidth(),
-        onDismissRequest = { /* Handle dismiss */ },
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .background(MaterialTheme.colorScheme.primary)
-            )
-        }
+        sheetState = bottomSheetState,
+        modifier = Modifier.fillMaxSize(),
+        onDismissRequest = onDismissRequest
     ) {
-        // Bottom sheet content
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp), // Set height of half-expanded state
+                .height(300.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -242,4 +239,3 @@ private fun HomeTitle() {
         modifier = Modifier.padding(horizontal = 16.dp)
     )
 }
-

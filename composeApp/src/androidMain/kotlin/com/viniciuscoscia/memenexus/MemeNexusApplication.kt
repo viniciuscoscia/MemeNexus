@@ -1,7 +1,7 @@
 package com.viniciuscoscia.memenexus
 
 import android.app.Application
-import com.plcoding.bookpedia.di.initKoin
+import com.viniciuscoscia.memenexus.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
 class MemeNexusApplication: Application() {
