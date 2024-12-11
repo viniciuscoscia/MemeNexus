@@ -165,7 +165,7 @@ private fun HomeBody(
 }
 
 @Composable
-fun HomeTemplateBottomSheet(
+private fun HomeTemplateBottomSheet(
     bottomSheetState: SheetState,
     onDismissRequest: () -> Unit
 ) {
