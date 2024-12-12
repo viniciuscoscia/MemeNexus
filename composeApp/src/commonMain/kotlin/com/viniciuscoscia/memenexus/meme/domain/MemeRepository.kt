@@ -6,4 +6,5 @@ import com.viniciuscoscia.memenexus.meme.domain.entity.Meme
 
 interface MemeRepository {
     fun getUserMemes(): Result<List<Meme>, DataError.Remote>
+    fun getMemesTemplatePath(): List<ByteArray>
 }

@@ -25,6 +25,10 @@ class HomeViewModel(
             _state.value
         )
 
+    init {
+        memeRepository.getMemesTemplatePath()
+    }
+
     fun onAction(action: HomeAction) {
 
     }
