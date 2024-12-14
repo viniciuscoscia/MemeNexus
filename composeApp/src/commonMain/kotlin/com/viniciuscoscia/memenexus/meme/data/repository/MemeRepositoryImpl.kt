@@ -21,12 +21,7 @@ class MemeRepositoryImpl(
     }
 
     override fun getMemesTemplatePath(): List<ByteArray> {
-        val memeTemplates = fileManager.getMemeTemplates()
-        println(memeTemplates.size)
-        memeTemplates.forEach {
-            println(it)
-        }
-        return memeTemplates
+        return fileManager.getMemeTemplates()
     }
 
 //    override suspend fun searchBooks(query: String): kotlin.Result<List<Book>, DataError.Remote> {
